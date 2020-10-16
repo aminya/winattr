@@ -170,18 +170,18 @@ describe_windowsOnly("Windows", function()
 					});
 				});
 
-				it("throws if non-existent", done =>
+				it("throws if non-existent", async () =>
 				{
-					winattr.set("./fake-file", {readonly:true}, setError =>
-					{
+					try {
+						await winattr.set("./fake-file", {readonly:true})
+					} catch(setError) {
 						expect(setError).to.be.instanceOf(Error);
-
-						winattr.get("./fake-file", (getError, getResult) =>
-						{
-							expect(getError).to.be.instanceOf(Error);
-							done();
-						});
-					});
+					}
+					try {
+						const getResult = await winattr.get("./fake-file")
+					} catch(getError) {
+						expect(getError).to.be.instanceOf(Error);
+					};
 				});
 
 				// TODO :: supports "/" and "\" dir separators
