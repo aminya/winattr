@@ -25,18 +25,14 @@ npm install winattr
 
 ## Methods
 
-### `get(path, callback)`
+### `get(path: string): Promise<Attributes>`
 `path` - Path to file or directory  
-`callback(err,attrs)` - A callback which is called upon completion  
 ```js
-winattr.get('path/to/file.ext', (err, attrs) => {
-  if (err == null) {
-    console.log(attrs);
-  }
-});
+const attrs = await winattr.get('path/to/file.ext')
+console.log(attrs)
 ```
 
-### `getSync(path)`
+### `getSync(path: string): Attributes`
 `path` - Path to file or directory  
 
 Returns an `Object` or throws an error if the file or dir cannot be found/accessed.
@@ -46,16 +42,11 @@ const attrs = winattr.getSync('path/to/file.ext');
 console.log(attrs);
 ```
 
-### `set(path, attrs, callback)`
+### `set(path: string, attrs: Attributes): Promise<void>`
 `path` - Path to file or directory  
 `attrs` - An object containing attributes to change  
-`callback(err)` - A callback which is called upon completion  
 ```js
-winattr.set('path/to/folder/', {readonly:true}, err => {
-  if (err == null) {
-    console.log('success');
-  }
-});
+await winattr.set('path/to/folder/', {readonly:true})  
 ```
 
 ### `setSync(path, attrs)`
@@ -67,6 +58,15 @@ Throws an error if the file or dir cannot be found/accessed.
 winattr.setSync('path/to/folder/', {readonly:true});
 ```
 
+### `Attributes` type:
+```typescript
+interface Attributes {
+  archive: boolean
+  hidden: boolean
+  readonly: boolean
+  system: boolean
+}
+```
 
 [npm-image]: https://img.shields.io/npm/v/winattr.svg
 [npm-url]: https://npmjs.com/package/winattr
