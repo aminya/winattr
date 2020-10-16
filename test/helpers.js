@@ -43,25 +43,35 @@ const newFile = (path, attrs, lib, callback) =>
 {
 	path = resolvePath(__dirname, path);
 
-	fs.writeFile(path, "", writeError =>
+	let winattrError, setgetError
+
+	fs.writeFile(path, "", async writeError =>
 	{
 		if (writeError!=null) return callback(writeError);
 
 		switchLib(lib);
 
-		setget(path, attrs, (setgetError, attrs) =>
+		try {
+			await setget(path, attrs)
+		} catch(err) {
+			setgetError = err
+		}
+
+		// Set attributes to false to avoid EPERM issues when deleting
+		try {
+			await winattr.set(path, defaultAttribs())
+		} catch(err) {
+			winattrError = err
+		}
+
+		// Remove test file
+		fs.unlink(path, unlinkError =>
 		{
-			// Set attributes to false to avoid EPERM issues when deleting
-			winattr.set(path, defaultAttribs(), winattrError =>
-			{
-				// Remove test file
-				fs.unlink(path, unlinkError =>
-				{
-					callback(unlinkError || winattrError || setgetError || null, attrs);
-				});
-			});
+			callback(unlinkError || winattrError || setgetError || null, attrs);
 		});
+
 	});
+
 };
 
 
@@ -103,24 +113,32 @@ const newFolder = (path, attrs, lib, callback) =>
 {
 	path = resolvePath(__dirname, path);
 
-	fs.mkdir(path, mkError =>
+	let setgetError, winattrError
+
+	fs.mkdir(path, async mkError =>
 	{
 		if (mkError!=null) return callback(mkError);
 
 		switchLib(lib);
 
-		setget(path, attrs, (setgetError, attrs) =>
+		try {
+			await setget(path, attrs)
+		} catch (error) {
+			setgetError = error
+		}
+		// Set attributes to false to avoid EPERM issues when deleting
+		try {
+			await winattr.set(path, defaultAttribs())
+		} catch (error) {
+			winattrError = error
+		}
+
+		// Remove test dir
+		fs.rmdir(path, rmError =>
 		{
-			// Set attributes to false to avoid EPERM issues when deleting
-			winattr.set(path, defaultAttribs(), winattrError =>
-			{
-				// Remove test dir
-				fs.rmdir(path, rmError =>
-				{
-					callback(rmError || winattrError || setgetError || null, attrs);
-				});
-			});
+			callback(rmError || winattrError || setgetError || null, attrs);
 		});
+
 	});
 };
 
@@ -159,14 +177,14 @@ const newFolderSync = (path, attrs, lib) =>
 
 
 
-const setget = (path, attrs, callback) =>
+const setget = async (path, attrs) =>
 {
-	winattr.set(path, attrs, error =>
-	{
-		if (error!=null) return callback(error);
-
-		winattr.get(path, callback);
-	});
+	try {
+		await winattr.set(path, attrs)
+	} catch (error) {
+		throw error
+	}
+	await winattr.get(path);
 };
 
 
