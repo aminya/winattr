@@ -17,7 +17,7 @@
     "nyc": "^15.1.0"
   },
   "engines": {
-    "node": ">= 8"
+    "node": ">= 10"
   },
   "scripts": {
     "ci": "npm run test && nyc report --reporter=text-lcov | coveralls",
