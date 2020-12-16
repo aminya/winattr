@@ -1,7 +1,7 @@
 {
   "name": "@aminya/winattr",
   "description": "Foolproof Windows® file attributes.",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "license": "MIT",
   "author": "Steven Vachon <contact@svachon.com> (https://svachon.com), Amin Yahyaabadi <aminyahyaabadi74@gmail.com>",
   "repository": "https://github.com/aminya/winattr",
