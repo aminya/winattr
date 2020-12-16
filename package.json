@@ -25,7 +25,8 @@
     "test": "nyc --silent mocha test/ --bail --check-leaks"
   },
   "files": [
-    "lib"
+    "lib",
+    "types"
   ],
   "keywords": [
     "attributes",
